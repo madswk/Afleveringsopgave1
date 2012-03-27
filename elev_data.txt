@@ -1,0 +1,15 @@
+2 Solvej Bjørnson A 0 7 2 4 2 -4 -4 7 -3 0
+4 Pernille Henriksen A 12 12 4 10 12 7 7 10 7 4
+7 Viggo Olsen C 10 10 7 12 4 2 4 7 10 10
+1 Kurt Hansen B 2 0 -3 10 7 4 4 7 10 10
+3 Ruth Petersen C 2 2 0 4 2 0 4 4 4 2
+5 Bent Christensen B 7 7 2 0 10 4 2 2 7 10
+6 Peter Hasselback A 12 10 10 12 7 4 7 7 10 12
+8 Mads Kristensen B 7 7 10 12 4 0 7 7 10 12
+9 Helle Fulgsang A 4 4 7 2 2 7 10 4 7 7
+10 Bodil Madsen B 10 7 -3 2 2 -3 4 10 7 4
+13 Søren Feltskov C 10 12 7 7 10 7 4 2 4 4
+15 Maiken Sonne A 4 7 7 7 -3 2 0 4 4 10
+11 Holger Skøt C 0 2 2 4 4 -4 -3 0 0 0
+14 Rigmor Nielsen C 0 2 4 4 7 7 10 2 0 7
+12 Karl Frederiksen B -4 -3 -3 2 2 0 0 2 2 0
