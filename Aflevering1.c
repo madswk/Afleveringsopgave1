@@ -6,11 +6,13 @@
 	/* OPGAVE 1 */
 	/*			*/
 
-// Definerer navne til speciferede tal som bruges senere
 #define N 24
 #define STUDENTS 15
 #define TRUE 1
 #define FALSE 0
+
+char *FAG_NAVN[] = {"Matematik skriftlig","matematik mundtlig","dansk skriftlig","dansk mundtlig","engelsk skriftlig","engelsk mundtlig","kemi","fysik","biologi","geografi"};
+int FAG_SIZE = 10;
 
 // En struct, hvori der er oplysninger om eleverne, oprettets. Bruger 'typedef' af praktiske årsager i programmet.
 typedef struct 
@@ -30,7 +32,7 @@ typedef struct
 	double snit;
 }klasse_data;
 
-// En enum oprettes af praktiske årsager til senere funktioner, hvor det bliver praktisk at have navne i stedet for tal.
+// En enum oprettes til senere funktioner, hvor det bliver praktisk at have navne i stedet for tal.
 typedef enum 
 {
 	DATA_NAVN, 
@@ -53,51 +55,52 @@ int sort_remove_count(elev_data*,int,PRINT_TYPES,void*);
 void sort_remove(elev_data*,int,elev_data*,PRINT_TYPES,void*);
 void snit_klasse(elev_data*,int,klasse_data*);
 void samlign_klasse_snit(klasse_data*,klasse_data*);
-void snit_samlign(elev_data*,int,int*,int*,int*,int);
+void snit_samlign(elev_data *e,int size,int *count,char *klasse, int over_eller_under);
+void fag(elev_data*,int);
 
 
 int main()
 {		
-	printf("\t#######################################################\n\t\t*** C PROGRAM - AFLEVERINGSPROJEKT 1 ***\n\t#######################################################\n\n");
+	printf("\t#######################################################\n\t\t*** C PROGRAM - AFLEVERINGSPROJEKT 1\n\t\t*** MADS KJELDSEN S120055\n\t\t*** 28/03-2012\n\t#######################################################\n\n");
 		
 		/*			*/
 		/* OPGAVE 2 */
 		/*			*/
 	
-	// Struct af arrays med elevernes data, hvor 'STUDENTS' angiver antallet af elever.	
+	// array af structs med elevernes data, hvor 'STUDENTS' angiver antallet af elever.	
 	elev_data e[STUDENTS];
 	char k[2];
 	int a_size;
 	
-	// Funktionen Læser alt data i tekstfilen og gemmer i 'e' og sorterer i tilhørende arrays.
+	// Funktionen Læser alt data i tekstfilen og gemmer i 'e'
 	read_file(e, STUDENTS);
 	// Funktionen Sorterer 'e' med hensyn til klasse. 3. parameter bestemmer hvad der sorteres på i 'e'
 	sortOn(e, STUDENTS, DATA_KLASSE);
-	// Funktionen Læser klassebegnelse fra en fil og sættes i 'k'.
+	// Funktionen Læser klassebegnelse fra en fil som bliver sat i 'k'.
 	read_input(k);
 
 	// a_size (array size) variablen bliver sat, idet funktionen kaldes. Den ignorerer alt andet end det der bliver sorteret på.
-	// I dette tilfælde bliver sorteret på den klassebetegnelse funktionen ovenover fik, således tælles der hvor mange pladser
+	// I dette tilfælde bliver sorteret på den klassebetegnelse 'k' funktionen ovenover fik, således tælles der hvor mange pladser
 	// det nye struct array skal have.
-	// sort_remove_count(Det der skal sorteres med, Angiver antallet af elever(størrelsen af arrayet), Angiver hvad der skal sorteres på, Sortering med henssyn til input)
+	// sort_remove_count(Det der skal sorteres i, Angiver antallet af elever i 'e', Angiver hvad der skal sorteres på, Sortering med hensyn til input)
 	a_size = sort_remove_count(e, STUDENTS, DATA_KLASSE, k);
 	
-	// Det nye struct array 'new_e' deklareres.
+	// Det nye struct array 'new_e' deklareres med størrelsen 'a_size' funktionen ovenover beregnede.
 	elev_data new_e[a_size];
 	
 	// Funktionen har næsten samme funktion som 'sort_remove_count'. I stedet fjernes den alt det data 
-	// der ikke skal bruges. Dataen der bliver sorteret på sættes i det lige før dekarerede 'new_e'.
+	// der ikke skal bruges. Den sorterede data bliver sat i 'new_e'.
 	sort_remove(e, STUDENTS, new_e ,DATA_KLASSE, k);
 	
 	// Funktionen sorterer på elevernes navne i 'new_e'
 	sortOn(new_e, a_size, DATA_NAVN);
 	
-	// Her udnyttes den tidligere deklarerede enum. type bestemmer hvilke data jeg gerne vil have fra den enkelte elev. type skal også angive hvor mange data jeg gerne vil have.
+	// Her udnyttes den tidligere deklarerede enum. 'type' bestemmer hvilke data jeg gerne vil have fra den enkelte elev. 'type' skal også angive hvor mange data jeg gerne vil have.
 	// I dette tilfælde er der 4. stk data: DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN.
 	PRINT_TYPES type[4] = {DATA_KLASSE,DATA_NUMMER,DATA_NAVN,DATA_EFTERNAVN};
 	
-	// Funktionen skriver den data jeg har valgt ovenover 'type' fra 'new_e' til en tekstfil 'OPGAVE2.txt' og udsrkiver derefter den valgte data til consollen 'TRUE'.
-	// write_file(Det der skal sorteres med(struct arrayet), Størrelse af det der sorteres med(størrelsen af struct arrayet), Hvilken type af data der skal udskrives, Antallet af forskelligt data, Tekstfilen der skal udskrives til, om der skal udskrives til consollen TRUE = 1 = JA - FALSE = 0 = NEJ)
+	// Funktionen skriver den data jeg har valgt ovenover 'type' fra 'new_e' til en tekstfil 'OPGAVE2.txt' og udsrkiver derefter dataen til consollen 'TRUE'.
+	// write_file(Det der skal sorteres i 'new_e', Størrelsen af det der sorteres i(størrelsen af 'new_e'), Hvilken type af data der skal udskrives 'type', Antallet af forskelligt data, Tekstfilen der skal udskrives til, om der skal udskrives til consollen TRUE = 1 = JA - FALSE = 0 = NEJ)
 	write_file(new_e, a_size, type, 4, "OPGAVE2.txt","w", TRUE);
 	
 		/*			*/
@@ -111,7 +114,7 @@ int main()
 		/* OPGAVE 4 */
 		/*			*/
 		
-	// Funktionen beregner elevenes snit i 'new_e'
+	// Funktionen beregner elevernes snit i 'new_e' med størrelsen 'a_size'
 	snit(new_e, a_size);
 	
 	PRINT_TYPES type3[5] = {DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN, DATA_SNIT};
@@ -121,7 +124,7 @@ int main()
 		/* OPGAVE 5	*/
 		/*			*/
 	
-	// Funktionen beregner elevenes snit i 'e'
+	// Funktionen beregner elevernes snit i 'e' med størrelsen 'STUDENTS'
 	snit(e, STUDENTS);
 	
 	PRINT_TYPES type4[5] = {DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN, DATA_SNIT};
@@ -138,7 +141,7 @@ int main()
 	klasser[2].klasse = 'C';
 	FILE *prt = fopen("OPGAVE6.txt","w");
 	
-	// Funktionen kaldes. Hver enkelt klasses snit beregnes og sættes i struct arrayet klasser.
+	// Funktionen beregner hver enkelt klasses snit som bliver sat i henholdsvis 'klasser[0]','klasser[1]','klasser[2]'
 	snit_klasse(e, STUDENTS, klasser);		
 	
 	printf("\n[OPGAVE6]\n\n");
@@ -180,14 +183,16 @@ int main()
 	a_size = sort_remove_count(e,STUDENTS, DATA_KLASSE, "A");
 	elev_data new_e2[a_size];
 	
-	// Alt fjernes på nær eleverne i klasse A
+	// Alt fjernes på nær eleverne i klasse A, hvor det sorterede data sættet i 'new_e2'
 	sort_remove(e, STUDENTS, new_e2 , DATA_KLASSE, "A");
 	
-	// Der sortes på snit, således det bedste snit ligger på den første plads i new_e2
+	// Der sorteres på snit, således det bedste snit ligger på den første plads i 'new_e2'
 	sortOn(new_e2, a_size, DATA_SNIT);
 	
-	// Data om eleven med det bedste snit i A udskrives til fil (ikke til consol)
+	// Data om eleven med det bedste snit i klasse A udskrives til fil (ikke til consol)
 	PRINT_TYPES type6[5] = {DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN, DATA_SNIT};
+	
+	// Da det kun drejer sig om én elev, skal 2. parameter kun sættes til 1.
 	write_file(&new_e2[0], 1, type6, 5, "OPGAVE9.txt","w", FALSE);
 	
 	// Samme fremgangsmåde med klasse B (ikke til consol)
@@ -212,7 +217,7 @@ int main()
 		/*  OPGAVE 10	*/
 		/*				*/	
 	
-	// der sorteres på snit. Det bedste snit ligger på første plads i arrayet.
+	// der sorteres på snit i 'e'. Det bedste snit ligger på første plads i arrayet.
 	sortOn(e, STUDENTS, DATA_SNIT);
 	PRINT_TYPES type9[5] = {DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN, DATA_SNIT};
 	write_file(&e[0], 1, type9, 5, "OPGAVE10.txt","w", TRUE);
@@ -230,13 +235,14 @@ int main()
 		/*  OPGAVE 12	*/
 		/*				*/	
 	
-	// Variablerne skal bliver sat i funktionen nedenunder.	
 	int countA=0,countB=0,countC=0;
 	prt = fopen("OPGAVE12.txt","w");
 	
-	// Funktionen bestemmer hvor mange elever der hvar et snit på 2 og derover i de enkelte klasser hver for sig, når 'flaget' er 1.
-	// antallet bliver sat i henholdsvis countA, countB og countC efter hvilken klasse det er.
-	snit_samlign(e,STUDENTS,&countA,&countB,&countC,1);
+	// Funktionen bestemmer, hvor mange elever der har et snit på 2 og derover i de enkelte klasser, når 'flaget' er 1.
+	// Antallet bliver sat i henholdsvis countA, countB og countC efter hvilken klasse man har specificeret.
+	snit_samlign(e,STUDENTS,&countA,"A",1);
+	snit_samlign(e,STUDENTS,&countB,"B",1);
+	snit_samlign(e,STUDENTS,&countC,"C",1);
 
 	printf("\n[OPGAVE12]\n\n");
 	printf("Snit 2 og derover [Klasse A]: %d\nSnit 2 og derover [Klasse B]: %d\nSnit 2 og derover [Klasse C]: %d\n",countA, countB, countC);
@@ -250,14 +256,15 @@ int main()
 	printf("\n[OPGAVE13]\n\n");
 	printf("KLASSE - ELEVNR. - NAVN - KARAKTERER - GENNEMSNIT\n");
 	
-	// Funktionen udskrever de elever der har et snit på 2 og derunder, når flaget er 0.
-	snit_samlign(e,STUDENTS,&countA,&countB,&countC,0);
+	// Funktionen udskriver de elever der har et snit på 2 og derunder, når flaget er 0
+	// 'NULL' angiver at funktionen skal kigge på alle elever i 'e' og ikke på en specifik klasse
+	snit_samlign(e,STUDENTS,NULL,NULL,0);
 
 		/*				*/
 		/*  OPGAVE 15	*/
 		/*				*/
 	
-	// Funktionen sorterer på nummer	
+	// Funktionen sorterer på nummer i 'e'	
 	sortOn(e, STUDENTS, DATA_NUMMER);
 	PRINT_TYPES type11[6] = {DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN, DATA_KARAKTERER, DATA_SNIT};
 	write_file(e, STUDENTS, type11, 6, "OPGAVE15.txt","w", TRUE);
@@ -266,7 +273,7 @@ int main()
 		/*  OPGAVE 16	*/
 		/*				*/
 	
-	// Funktionen sorterer på navn	
+	// Funktionen sorterer på navn i 'e'
 	sortOn(e, STUDENTS, DATA_NAVN);
 	PRINT_TYPES type12[6] = {DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN, DATA_KARAKTERER, DATA_SNIT};
 	write_file(e, STUDENTS, type12, 6, "OPGAVE16.txt","w", TRUE);
@@ -275,7 +282,7 @@ int main()
 		/*  OPGAVE 17	*/
 		/*				*/
 	
-	// Funktionen sorterer på snit
+	// Funktionen sorterer på snit i 'e'
 	sortOn(e, STUDENTS, DATA_SNIT);
 	PRINT_TYPES type13[6] = {DATA_KLASSE, DATA_NUMMER, DATA_NAVN, DATA_EFTERNAVN, DATA_KARAKTERER, DATA_SNIT};
 	write_file(e, STUDENTS, type13, 6, "OPGAVE17.txt","w", TRUE);
@@ -286,10 +293,10 @@ int main()
 	
 	int k2;
 	
-	// Læser elevnummer fra en fil og sættes i 'k2'.
+	// Læser elevnummer fra en fil der bliver sat i 'k2'
 	read_input2(&k2);
 	
-	//Sorterer på elevnummer fra fil og sætter elevens oplysninger i nye structarray
+	//Sorterer på elevnummer fra inputet og sætter elevens oplysninger i 'new_e5'
 	a_size = sort_remove_count(e,STUDENTS,DATA_NUMMER, &k2);
 	elev_data new_e5[a_size];
 	sort_remove(e, STUDENTS, new_e5, DATA_NUMMER, &k2);
@@ -303,10 +310,10 @@ int main()
 		
 	char k3[10];
 	
-	// Læser navn fra en fil og sættes i 'k3'.
+	// Læser navn fra en fil som bliver sat i 'k3'
 	read_input3(k3);
 	
-	// Sorterer på navn fra fil og sætter elevens oplysninger i nye structarray
+	// Sorterer på navn fra inputtet og sætter elevens oplysninger i 'new_e6'
 	a_size = sort_remove_count(e,STUDENTS,DATA_NAVN,k3);
 	elev_data new_e6[a_size];
 	sort_remove(e, STUDENTS, new_e6, DATA_NAVN,k3);
@@ -318,9 +325,9 @@ int main()
 		/*  OPGAVE22	*/
 		/*				*/
 		
-	
+	printf("\n[OPGAVE22]\n\n");
+	fag(e, STUDENTS);
 		
-	
 return 0;
 }
 
@@ -426,25 +433,24 @@ void write_file(elev_data *e, int size, PRINT_TYPES *type, int sizeTypes, char *
 	{
 		if(type[f]==DATA_NAVN) 
 		{
-			fprintf(prt1, "NAVN - ");
+			fprintf(prt1, "NAVN *** ");
 		} 
 		else if(type[f]==DATA_NUMMER) 
 		{
-			fprintf(prt1, "ELEVNR. - ");
+			fprintf(prt1, "ELEVNR. *** ");
 		} 
 		else if(type[f]==DATA_KLASSE)
 		{
-			fprintf(prt1, "KLASSE - ");
+			fprintf(prt1, "KLASSE *** ");
 		}
 		else if(type[f]==DATA_SNIT) 
 		{
-			fprintf(prt1, "GENNEMSNIT - ");
+			fprintf(prt1, "GENNEMSNIT *** ");
 		} 
 		else if(type[f]==DATA_KARAKTERER) 
 		{
-			fprintf(prt1, "KARAKTERER - ");
+			fprintf(prt1, "KARAKTERER *** ");
 		}
-		
 	}
 	fprintf(prt1, "\n");
 
@@ -584,23 +590,15 @@ void samlign_klasse_snit(klasse_data *k, klasse_data *k2)
 	}
 }
 
-void snit_samlign(elev_data *e,int size,int *countA,int *countB,int *countC,int over_eller_under)
+void snit_samlign(elev_data *e,int size,int *count,char *klasse, int over_eller_under)
 {
 	int i;
 	FILE *prt = fopen("OPGAVE13.txt","w");
 	for(i=0;i<size;i++)
 	{
-		if((over_eller_under == 1 && e[i].klasse == 'A' && e[i].snit >= 2.0))
+		if((klasse != NULL && count != NULL) && (over_eller_under == 1 && e[i].klasse == *klasse && e[i].snit >= 2.0))
 		{
-			*(countA)=*(countA)+1;
-		}
-		else if((over_eller_under == 1 && e[i].klasse == 'B' && e[i].snit >= 2.0))
-		{
-			*(countB)=*(countB)+1;
-		}
-		else if((over_eller_under == 1 && e[i].klasse == 'C' && e[i].snit >= 2.0))
-		{
-			(*countC)=(*countC)+1;
+			*(count)=*(count)+1;
 		}
 		if(over_eller_under == 0 && e[i].snit <= 2.0)
 		{
@@ -612,4 +610,41 @@ void snit_samlign(elev_data *e,int size,int *countA,int *countB,int *countC,int 
 		}
 	}
 	fclose(prt);
+}
+
+void fag(elev_data* e,int size)
+{
+	FILE *prt = fopen("fag.txt","r");
+	FILE *prt1 = fopen("OPGAVE22.txt","w");
+	int i;
+	char k[20];
+	fscanf(prt,"%s",k);
+	
+	int fagc = 0;
+	
+	for(i=0;i<FAG_SIZE;i++) 
+	{
+		if(strcmp(FAG_NAVN[i], k)==0) {
+			break;
+		} 
+		else
+		{
+			fagc++;
+		}
+	}
+	elev_data highest = e[1];
+	
+	for(i=0;i<size;i++)
+	{
+		if(e[i].karakter[fagc-1] > highest.karakter[fagc-1])
+		{
+			highest = e[i];
+		}
+	}
+	printf("KLASSE *** ELEVNR. *** NAVN *** GENNEMSNIT *** BEDSTE KARAKTER I PÅGÆLDENDE FAG\n");
+	printf("%c \t%d \t%s %s \t%.2lf \t%d %s\n",highest.klasse, highest.nummer, highest.navn, highest.efternavn, highest.snit, highest.karakter[fagc-1], FAG_NAVN[fagc-1]);
+	fprintf(prt1,"KLASSE *** ELEVNR. *** NAVN *** GENNEMSNIT *** BEDSTE KARAKTER I PÅGÆLDENDE FAG\n");
+	fprintf(prt1,"%c \t%d \t%s %s \t%.2lf \t%d %s\n",highest.klasse, highest.nummer, highest.navn, highest.efternavn, highest.snit, highest.karakter[fagc-1], FAG_NAVN[fagc-1]);
+	fclose(prt);
+	fclose(prt1);
 }
